@@ -1,11 +1,10 @@
 #include <iostream>
 #include <stdlib.h>
-
+#include <vector>
 int main()
 {
-
     FILE *fptr;
-    if ((fptr = fopen("input-2.txt", "r")) == NULL)
+    if ((fptr = fopen("input-3.txt", "r")) == NULL)
     {
 
         printf("Error in opening file\n");
@@ -15,8 +14,8 @@ int main()
     fscanf(fptr, "%d %d\n", &N, &T);
     int lengths[N + 1];
     int values[N + 1];
-    int opt[N + 1][T + 1]; // 2D array holding optimal values
-    int l, v;              // temporary values for reading
+    std::vector<int> opt(T + 1, 0); //1D array to hold optimal values
+    int l, v;       // temporary values for reading
     for (int i = 0; i <= N; i++)
     {
         if (i == 0)
@@ -33,30 +32,20 @@ int main()
     }
     fclose(fptr);
     int included = 0;
-    int excluded = 0;
-    for (int n = 0; n <= N; n++)
+    int repeated = 0;
+    for (int t = 0; t <= T; t++)
     {
-        for (int t = 0; t <= T; t++)
+        for (int n = 0; n <= N; n++)
         {
-
-            if (n == 0 || t == 0)
+            if (lengths[n] <= t)
             {
-                opt[n][t] = 0;
-                continue;
+                included = values[n] + opt[t - lengths[n]];
+                repeated = opt[t];
+                opt[t] = included > repeated ? included : repeated;
             }
-            if (lengths[n] > t)
-            {
-                opt[n][t] = opt[n - 1][t];
-                
-            }
-            else
-            {
-                included = values[n] + opt[n - 1][t - lengths[n]];
-                excluded = opt[n - 1][t];
-                opt[n][t] = included > excluded ? included : excluded;
-            }
+                    
         }
     }
-    std::cout << "Max value " << opt[N][T] << "\n";
+    std::cout << opt[T] << "\n";
     return 0;
 }
